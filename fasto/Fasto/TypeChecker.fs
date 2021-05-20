@@ -130,22 +130,41 @@ and checkExp  (ftab : FunTable)
         See `AbSyn.fs` for the expression constructors of `Times`, ...
     *)
     | Times (e1, e2, pos) ->
-        failwith "Unimplemented type check of multiplication"
+        let (e1_dec, e2_dec) = checkBinOp ftab vtab (pos, Int, e1, e2)
+        (Int, Times (e1_dec, e2_dec, pos))
 
-    | Divide (_, _, _) ->
-        failwith "Unimplemented type check of division"
+    | Divide (e1, e2, pos) ->
+        let (e1_dec, e2_dec) = checkBinOp ftab vtab (pos, Int, e1, e2)
+        (Int, Divide (e1_dec, e2_dec, pos))
 
-    | And (_, _, _) ->
-        failwith "Unimplemented type check of &&"
+    | And (e1, e2, pos) ->
+        let  (t1, e1') = checkExp ftab vtab e1
+        let  (t2, e2') = checkExp ftab vtab e2
+        match (t1 = t2, t1) with
+          | (false, _) -> reportTypesDifferent "arguments of && " t1 t2 pos
+          | (true, Bool) -> (Bool, And (e1', e2', pos))
+          | _ -> reportTypeWrongKind "arguments of && " "bool" t1 pos
 
-    | Or (_, _, _) ->
-        failwith "Unimplemented type check of ||"
+    | Or (e1, e2, pos) ->
+        let  (t1, e1') = checkExp ftab vtab e1
+        let  (t2, e2') = checkExp ftab vtab e2
+        match (t1 = t2, t1) with
+          | (false, _) -> reportTypesDifferent "arguments of || " t1 t2 pos
+          | (true, Bool) -> (Bool, And (e1', e2', pos))
+          | _ -> reportTypeWrongKind "arguments of || " "bool" t1 pos
 
-    | Not (_, _) ->
-        failwith "Unimplemented type check of not"
+    | Not (e1, pos) ->
+        let  (t1, e1') = checkExp ftab vtab e1
+        match (t1) with
+          | Bool -> (Bool, Not (e1', pos))
+          | _ -> reportTypeWrongKind "arguments of Not " "bool" t1 pos
 
-    | Negate (_, _) ->
-        failwith "Unimplemented type check of negate"
+    | Negate (e1, pos) ->
+        let  (t1, e1') = checkExp ftab vtab e1
+        match (t1) with
+          | Int -> (Int, Negate (e1', pos))
+          | _ -> reportTypeWrongKind "arguments of Negate " "IntVal" t1 pos
+        
 
     (* The types for e1, e2 must be the same. The result is always a Bool. *)
     | Equal (e1, e2, pos) ->
@@ -294,8 +313,13 @@ and checkExp  (ftab : FunTable)
         - assuming `a` is of type `t` the result type
           of replicate is `[t]`
     *)
-    | Replicate (_, _, _, _) ->
-        failwith "Unimplemented type check of replicate"
+    | Replicate (n, a, _, pos) ->
+        let (t1  , n'  ) = checkExp ftab vtab n
+        let (t2, a') = checkExp ftab vtab a
+        match (t1) with
+          | Int -> (Array (t2), Replicate(n',a', t2, pos))
+          | _ -> reportTypeWrongKind "first argument of replicate " "int" t1 pos
+        
 
     (* TODO project task 2: Hint for `filter(f, arr)`
         Look into the type-checking lecture slides for the type rule of `map`

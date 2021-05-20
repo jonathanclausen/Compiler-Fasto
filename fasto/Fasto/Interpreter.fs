@@ -149,18 +149,45 @@ let rec evalExp (e : UntypedExp, vtab : VarTable, ftab : FunTable) : Value =
         e.g., `And (e1, e2, pos)` should not evaluate `e2` if `e1` already
               evaluates to false.
   *)
-  | Times(_, _, _) ->
-        failwith "Unimplemented interpretation of multiplication"
-  | Divide(_, _, _) ->
-        failwith "Unimplemented interpretation of division"
-  | And (_, _, _) ->
-        failwith "Unimplemented interpretation of &&"
-  | Or (_, _, _) ->
-        failwith "Unimplemented interpretation of ||"
-  | Not(_, _) ->
-        failwith "Unimplemented interpretation of not"
-  | Negate(_, _) ->
-        failwith "Unimplemented interpretation of negate"
+  | Times(e1, e2, pos) ->
+        let res1 = evalExp(e1, vtab, ftab)
+        let res2 = evalExp(e2, vtab, ftab)
+        match (res1, res2) with
+          | (IntVal n1, IntVal n2) -> IntVal (n1*n2)
+          | _ -> invalidOperands "Times on non-integral args: " [(Int, Int)] res1 res2 pos
+  | Divide(e1, e2, pos) ->
+        let res1 = evalExp(e1, vtab, ftab)
+        let res2 = evalExp(e2, vtab, ftab)
+        match (res1, res2) with
+          | (IntVal n1, IntVal 0)  -> invalidOperands "Divide by zero error: " [(Int, Int)] res1 res2 pos
+          | (IntVal n1, IntVal n2) -> IntVal (n1/n2)
+          | _ -> invalidOperands "Divide on non-integral args: " [(Int, Int)] res1 res2 pos
+  | And (e1, e2, pos) ->
+        let res1 = evalExp(e1, vtab, ftab)
+        let res2 = evalExp(e2, vtab, ftab)
+        match (res1, res2) with
+          | (BoolVal n1, BoolVal n2) -> match (n1) with
+                                          | false -> BoolVal (false)
+                                          | true  -> BoolVal (n1 && n2)
+          | _ -> invalidOperands "&& called on non-bool value: " [(Bool, Bool)] res1 res2 pos
+  | Or (e1, e2, pos) ->
+        let res1 = evalExp(e1, vtab, ftab)
+        let res2 = evalExp(e2, vtab, ftab)
+        match (res1, res2) with
+          | (BoolVal n1, BoolVal n2) -> match (n1) with
+                                          | true  -> BoolVal (true)
+                                          | false -> BoolVal (n1 || n2)                           
+          | _ -> invalidOperands "|| called on non-bool value: " [(Bool, Bool)] res1 res2 pos
+  | Not(e1, pos) ->
+        let res1 = evalExp(e1, vtab, ftab)
+        match (res1) with
+          | BoolVal n1 -> BoolVal (not n1)
+          | _ -> invalidOperand "NOT called on non-bool value: " Bool res1 pos
+  | Negate(e1, pos) ->
+        let res1 = evalExp(e1, vtab, ftab)
+        match (res1) with 
+          | IntVal n1 -> IntVal (-1 * n1)
+          | _ -> invalidOperand "NEGATE called on non-int value: " Int res1 pos
   | Equal(e1, e2, pos) ->
         let r1 = evalExp(e1, vtab, ftab)
         let r2 = evalExp(e2, vtab, ftab)
@@ -252,8 +279,17 @@ let rec evalExp (e : UntypedExp, vtab : VarTable, ftab : FunTable) : Value =
          the value of `a`; otherwise raise an error (containing
          a meaningful message).
   *)
-  | Replicate (_, _, _, _) ->
-        failwith "Unimplemented interpretation of replicate"
+  | Replicate (n, a, t, pos) ->
+        let n' = evalExp(n, vtab, ftab)
+        let a' = evalExp(a, vtab, ftab)
+        match n' with
+          | IntVal n' when n' >= 0 ->
+                        let arr = [ 0 .. n' ]
+                        let val_arr = List.map(fun x -> a' ) arr
+                        ArrayVal (val_arr, valueType(a'))
+          | IntVal _ -> raise (MyError("First argument of replicate is 0 or less: " + ppVal 0 n'
+                                       , pos))
+          | _ ->   invalidOperand "Replicate on non-integer n: " (Int) n' pos
 
   (* TODO project task 2: `filter(p, arr)`
        pattern match the implementation of map:
