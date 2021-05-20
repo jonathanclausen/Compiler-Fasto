@@ -35,10 +35,10 @@ main:
 # was:	ori	_minus_R_8_, $0, 1
 	sub	$3, $3, $4
 # was:	sub	_letBind_6_, _minus_L_7_, _minus_R_8_
-# 	ori	_mult1_L_10_,_letBind_2_,0
-# 	ori	_mult2_R_11_,_letBind_6_,0
+# 	ori	_times_L_10_,_letBind_2_,0
+# 	ori	_times_R_11_,_letBind_6_,0
 	mul	$16, $2, $3
-# was:	mul	_tmp_9_, _mult1_L_10_, _mult2_R_11_
+# was:	mul	_tmp_9_, _times_L_10_, _times_R_11_
 # 	ori	_mainres_1_,_tmp_9_,0
 	ori	$2, $16, 0
 # was:	ori	$2, _mainres_1_, 0

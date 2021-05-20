@@ -17,98 +17,27 @@
 _stop_:
 	ori	$2, $0, 10
 	syscall
-# Function incr
-incr:
-	sw	$31, -4($29)
-	addi	$29, $29, -8
-# 	ori	_param_a_1_,$2,0
-# 	ori	_param_b_2_,$3,0
-# 	ori	_plus_L_4_,_param_a_1_,0
-# 	ori	_plus_R_5_,_param_b_2_,0
-	add	$2, $2, $3
-# was:	add	_incrres_3_, _plus_L_4_, _plus_R_5_
-# 	ori	$2,_incrres_3_,0
-	addi	$29, $29, 8
-	lw	$31, -4($29)
-	jr	$31
 # Function main
 main:
 	sw	$31, -4($29)
-	sw	$18, -16($29)
-	sw	$17, -12($29)
 	sw	$16, -8($29)
-	addi	$29, $29, -20
-	ori	$3, $0, 3
-# was:	ori	_size_reg_14_, $0, 3
-	ori	$16, $28, 0
-# was:	ori	_arr_reg_8_, $28, 0
-	sll	$2, $3, 2
-# was:	sll	_tmp_17_, _size_reg_14_, 2
-	addi	$2, $2, 4
-# was:	addi	_tmp_17_, _tmp_17_, 4
-	add	$28, $28, $2
-# was:	add	$28, $28, _tmp_17_
-	sw	$3, 0($16)
-# was:	sw	_size_reg_14_, 0(_arr_reg_8_)
-	addi	$3, $16, 4
-# was:	addi	_addr_reg_15_, _arr_reg_8_, 4
-	ori	$2, $0, 1
-# was:	ori	_tmp_reg_16_, $0, 1
-	sw	$2, 0($3)
-# was:	sw	_tmp_reg_16_, 0(_addr_reg_15_)
-	addi	$3, $3, 4
-# was:	addi	_addr_reg_15_, _addr_reg_15_, 4
-	ori	$2, $0, 2
-# was:	ori	_tmp_reg_16_, $0, 2
-	sw	$2, 0($3)
-# was:	sw	_tmp_reg_16_, 0(_addr_reg_15_)
-	addi	$3, $3, 4
-# was:	addi	_addr_reg_15_, _addr_reg_15_, 4
+	addi	$29, $29, -12
 	ori	$2, $0, 3
-# was:	ori	_tmp_reg_16_, $0, 3
-	sw	$2, 0($3)
-# was:	sw	_tmp_reg_16_, 0(_addr_reg_15_)
-	addi	$3, $3, 4
-# was:	addi	_addr_reg_15_, _addr_reg_15_, 4
-	lw	$17, 0($16)
-# was:	lw	_size_reg_9_, 0(_arr_reg_8_)
-	ori	$2, $0, 0
-# was:	ori	_letBind_7_, $0, 0
-	addi	$16, $16, 4
-# was:	addi	_arr_reg_8_, _arr_reg_8_, 4
-	ori	$18, $0, 0
-# was:	ori	_ind_var_10_, $0, 0
-_loop_beg_12_:
-	sub	$3, $18, $17
-# was:	sub	_tmp_reg_11_, _ind_var_10_, _size_reg_9_
-	bgez	$3, _loop_end_13_
-# was:	bgez	_tmp_reg_11_, _loop_end_13_
-	lw	$3, 0($16)
-# was:	lw	_tmp_reg_11_, 0(_arr_reg_8_)
-	addi	$16, $16, 4
-# was:	addi	_arr_reg_8_, _arr_reg_8_, 4
-# 	ori	$2,_letBind_7_,0
-# 	ori	$3,_tmp_reg_11_,0
-	jal	incr
-# was:	jal	incr, $2 $3
-# 	ori	_tmp_reg_18_,$2,0
-# 	ori	_letBind_7_,_tmp_reg_18_,0
-	addi	$18, $18, 1
-# was:	addi	_ind_var_10_, _ind_var_10_, 1
-	j	_loop_beg_12_
-_loop_end_13_:
-# 	ori	_tmp_19_,_letBind_7_,0
-	ori	$16, $2, 0
-# was:	ori	_mainres_6_, _tmp_19_, 0
+# was:	ori	_letBind_2_, $0, 3
+	ori	$3, $0, 4
+# was:	ori	_letBind_3_, $0, 4
+# 	ori	_plus_L_5_,_letBind_3_,0
+# 	ori	_plus_R_6_,_letBind_2_,0
+	add	$16, $3, $2
+# was:	add	_tmp_4_, _plus_L_5_, _plus_R_6_
+# 	ori	_mainres_1_,_tmp_4_,0
 	ori	$2, $16, 0
-# was:	ori	$2, _mainres_6_, 0
+# was:	ori	$2, _mainres_1_, 0
 	jal	putint
 # was:	jal	putint, $2
 	ori	$2, $16, 0
-# was:	ori	$2, _mainres_6_, 0
-	addi	$29, $29, 20
-	lw	$18, -16($29)
-	lw	$17, -12($29)
+# was:	ori	$2, _mainres_1_, 0
+	addi	$29, $29, 12
 	lw	$16, -8($29)
 	lw	$31, -4($29)
 	jr	$31
