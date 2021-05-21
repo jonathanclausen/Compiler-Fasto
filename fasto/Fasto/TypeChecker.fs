@@ -150,7 +150,7 @@ and checkExp  (ftab : FunTable)
         let  (t2, e2') = checkExp ftab vtab e2
         match (t1 = t2, t1) with
           | (false, _) -> reportTypesDifferent "arguments of || " t1 t2 pos
-          | (true, Bool) -> (Bool, And (e1', e2', pos))
+          | (true, Bool) -> (Bool, Or (e1', e2', pos))
           | _ -> reportTypeWrongKind "arguments of || " "bool" t1 pos
 
     | Not (e1, pos) ->
@@ -281,7 +281,7 @@ and checkExp  (ftab : FunTable)
         let (arr_type, arr_dec) = checkExp ftab vtab arr_exp
         let elem_type =
             match arr_type with
-              | Array t -> t
+              | Array t -> t 
               | _ -> reportTypeWrongKind "third argument of reduce" "array" arr_type pos
         let (f', f_argres_type) =
             match checkFunArg ftab vtab pos f with
@@ -330,8 +330,24 @@ and checkExp  (ftab : FunTable)
             - `arr` should be of type `[ta]`
             - the result of filter should have type `[tb]`
     *)
-    | Filter (_, _, _, _) ->
-        failwith "Unimplemented type check of filter"
+    | Filter (f, arr_exp, tp, pos) -> 
+        let (arr_type, arr_exp_dec) = checkExp ftab vtab arr_exp
+        let elem_type = 
+            match arr_type with 
+              | Array t -> t
+              | _ -> reportTypeWrongKind "second argument of map" "array" arr_type pos
+        let (f', f_res_type, f_arg_type) = 
+            match checkFunArg ftab vtab pos f with 
+              | (f', res, [a1]) -> (f', res, a1) 
+              | (_, res, args) ->
+                   reportArityWrong "first argument of map" 1 (args,res) pos
+        if elem_type <> f_arg_type then
+          reportTypesDifferent "function-argument and array-element types in map"
+                               f_arg_type elem_type pos
+        if f_res_type <> Bool then
+          reportTypeWrongKind "return type of input function" "bool" f_res_type pos
+        (Array f_res_type, Map (f', arr_exp_dec, elem_type, f_res_type, pos))
+
 
     (* TODO project task 2: `scan(f, ne, arr)`
         Hint: Implementation is very similar to `reduce(f, ne, arr)`.
@@ -339,8 +355,32 @@ and checkExp  (ftab : FunTable)
               scan's return type is the same as the type of `arr`,
               while reduce's return type is that of an element of `arr`).
     *)
-    | Scan (_, _, _, _, _) ->
-        failwith "Unimplemented type check of scan"
+    | Scan (f, e_exp, arr_exp, _, pos) ->
+        let (e_type  , e_dec  ) = checkExp ftab vtab e_exp
+        let (arr_type, arr_dec) = checkExp ftab vtab arr_exp
+        let elem_type =
+            match arr_type with
+              | Array t -> t 
+              | _ -> reportTypeWrongKind "third argument of scan" "array" arr_type pos
+        let (f', f_argres_type) =
+            match checkFunArg ftab vtab pos f with
+              | (f', res, [a1; a2]) ->
+                  if a1 <> a2 then
+                     reportTypesDifferent "argument types of operation in scan"
+                                          a1 a2 pos
+                  if res <> a1 then
+                     reportTypesDifferent "argument and return type of operation in scan"
+                                          a1 res pos
+                  (f', res)
+              | (_, res, args) ->
+                  reportArityWrong "operation in scan" 2 (args,res) pos
+        if elem_type <> f_argres_type then
+          reportTypesDifferent "operation and array-element types in scan"
+                               f_argres_type elem_type pos
+        if e_type <> f_argres_type then
+          reportTypesDifferent "operation and start-element types in scan"
+                               f_argres_type e_type pos
+        (Array f_argres_type, Scan (f', e_dec, arr_dec, elem_type, pos))
 
 and checkFunArg  (ftab : FunTable)
                  (vtab : VarTable)

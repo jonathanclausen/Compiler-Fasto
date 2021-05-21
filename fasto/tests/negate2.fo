@@ -1,0 +1,4 @@
+fun bool main () =
+    let n = read(int) in
+    let b = (0-3) in
+    write(~n == b)

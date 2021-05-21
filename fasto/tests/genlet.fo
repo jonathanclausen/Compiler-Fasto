@@ -1,2 +1,4 @@
 fun int main () =
-    let x = 2;; y = 4 in write(x+y)
+    let x = 2; y = 4
+    in write(x+y)
+    

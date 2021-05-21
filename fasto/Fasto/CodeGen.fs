@@ -193,9 +193,10 @@ let rec compileExp  (e      : TypedExp)
       else
         [ Mips.LUI (place, n / 65536)
         ; Mips.ORI (place, place, n % 65536) ]
-  | Constant (BoolVal p, _) ->
+  | Constant (BoolVal p, _) -> match p with
+                               | true -> [ Mips.LI (place, 1) ]
+                               | false -> [ Mips.LI (place, 0) ]
       (* TODO project task 1: represent `true`/`false` values as `1`/`0` *)
-      failwith "Unimplemented code generation of boolean constants"
   | Constant (CharVal c, pos) -> [ Mips.LI (place, int c) ]
 
   (* Create/return a label here, collect all string literals of the program
@@ -280,10 +281,8 @@ let rec compileExp  (e      : TypedExp)
 
   | Not (e1, pos) ->
       let t1 = newReg "not_L"
-      let thenlabel = newLab "then"
-      let elseLabel = newLab "else"
       let code1 = compileExp e1 vtable t1
-      failwith "Unimplemented code generation of not"
+      code1 @ [Mips.XORI (place,t1,1)]
 
   | Negate (e1, pos) ->
       let t1 = newReg "negate"
@@ -437,11 +436,42 @@ let rec compileExp  (e      : TypedExp)
         in `e1 || e2` if the execution of `e1` will evaluate to `true` then
         the code of `e2` must not be executed. Similarly for `And` (&&).
   *)
-  | And (_, _, _) ->
-      failwith "Unimplemented code generation of &&"
+  | And (e1, e2, pos) ->
+      let t1 = newReg "and_L"
+      let t2 = newReg "and_R"
+      let code1 = compileExp e1 vtable t1
+      let code2 = compileExp e2 vtable t2
+      let falseLabel = newLab "false"
+      code1 @ 
+       [ Mips.LI (place, 0) 
+       ; Mips.BEQ (t1,RZ,falseLabel)
+       ] @
+       code2 @ 
+       [ Mips.LI (place, 0) 
+       ; Mips.BEQ (t2,RZ,falseLabel)
+       ; Mips.LI (place, 1)
+       ; Mips.LABEL falseLabel
+       ] 
+      
 
-  | Or (_, _, _) ->
-      failwith "Unimplemented code generation of ||"
+
+  | Or (e1, e2, pos) ->
+      let t1 = newReg "or_L"
+      let t2 = newReg "or_R"
+      let code1 = compileExp e1 vtable t1
+      let code2 = compileExp e2 vtable t2
+      let trueLabel = newLab "true"
+      let falseLabel = newLab "false"
+      code1 @
+       [ Mips.LI (place, 0)
+       ; Mips.BNE (t1,RZ,trueLabel)
+       ] @
+       code2 @
+       [ Mips.BEQ (t2,RZ,falseLabel)
+       ; Mips.LABEL trueLabel
+       ; Mips.LI (place, 1)
+       ; Mips.LABEL falseLabel
+       ]
 
   (* Indexing:
      1. generate code to compute the index
@@ -638,8 +668,74 @@ let rec compileExp  (e      : TypedExp)
         If `n` is less than `0` then remember to terminate the program with
         an error -- see implementation of `iota`.
   *)
-  | Replicate (_, _, _, _) ->
-      failwith "Unimplemented code generation of replicate"
+  | Replicate (n, a, elem_type, (line, column)) ->
+      let size_reg = newReg "size_reg"
+      let n_code = compileExp n vtable size_reg
+      let a_reg = newReg "a_reg"
+      let a_code = compileExp a vtable a_reg
+      (* size_reg is now the integer n. *)
+
+      (* Check that array size N >= 0:
+         if N >= 0 then jumpto safe_lab
+         jumpto "_IllegalArrSizeError_"
+         safe_lab: ...
+      *)
+      let safe_lab = newLab "safe_lab"
+      let checksize = [ Mips.BGEZ (size_reg, safe_lab)
+                      ; Mips.LI (RN5, line)
+                      ; Mips.LA (RN6, "_Msg_IllegalArraySize_")
+                      ; Mips.J "_RuntimeError_"
+                      ; Mips.LABEL (safe_lab)
+                      ]
+
+      let addr_reg = newReg "addr_reg"
+      let i_reg = newReg "i_reg"
+      let init_regs = [ Mips.ADDI (addr_reg, place, 4)
+                      ; Mips.MOVE (i_reg, RZ) ]
+      (* addr_reg is now the position of the first array element. *)
+
+      let elem_size = elemSizeToInt (getElemSize elem_type)
+      (* Run a loop.  Keep jumping back to loop_beg until it is not the
+         case that i_reg < size_reg, and then jump to loop_end. *)
+      let loop_beg = newLab "loop_beg"
+      let loop_end = newLab "loop_end"
+      let tmp_reg = newReg "tmp_reg"
+      let loop_header = [ Mips.LABEL (loop_beg)
+                        ; Mips.SUB (tmp_reg, i_reg, size_reg)
+                        ; Mips.BGEZ (tmp_reg, loop_end)
+                        ]
+      (* iota is just 'arr[i] = i'.  arr[i] is addr_reg. *)
+      
+      
+      let byte_label = newLab "byte_label"
+      let end_label = newLab "end_label"
+      let res_reg = newReg "res_reg"
+      let elem_size_reg = newReg "elem_size"
+      
+      let loop_replicate =  [ Mips.ADDI (elem_size_reg, RZ, elem_size)
+                            ; Mips.SLTI (res_reg, elem_size_reg, 4)
+                            ; Mips.BNE (res_reg, RZ, byte_label)
+                            ; Mips.SW (a_reg, addr_reg, 0)
+                            ; Mips.J end_label
+                            ; Mips.LABEL (byte_label)
+                            ; Mips.SB (a_reg, addr_reg, 0) 
+                            ; Mips.LABEL end_label
+                            ]
+                            
+      let loop_footer = [ Mips.ADDI (addr_reg, addr_reg, elem_size)
+                        ; Mips.ADDI (i_reg, i_reg, 1)
+                        ; Mips.J loop_beg
+                        ; Mips.LABEL loop_end
+                        ]
+      n_code 
+       @ a_code
+       @ checksize
+       @ dynalloc (size_reg, place, elem_type)
+       @ init_regs
+       @ loop_header
+       @ loop_replicate
+       @ loop_footer
+
 
   (* TODO project task 2: see also the comment to replicate.
      (a) `filter(f, arr)`:  has some similarity with the implementation of map.

@@ -1,0 +1,4 @@
+falseError in /Users/jonathan/Documents/OneDrive - Københavns Universitet/IPS/GroupProject/IPS_Compiler/fasto/bin/../tests/short_circuit.asm line 22: Runtime exception at 0x00400034: address out of range 0x7fbffff8
+
+Processing terminated due to errors.
+

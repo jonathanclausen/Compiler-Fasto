@@ -168,7 +168,7 @@ let rec evalExp (e : UntypedExp, vtab : VarTable, ftab : FunTable) : Value =
         match (res1, res2) with
           | (BoolVal n1, BoolVal n2) -> match (n1) with
                                           | false -> BoolVal (false)
-                                          | true  -> BoolVal (n1 && n2)
+                                          | true  -> BoolVal (n2)
           | _ -> invalidOperands "&& called on non-bool value: " [(Bool, Bool)] res1 res2 pos
   | Or (e1, e2, pos) ->
         let res1 = evalExp(e1, vtab, ftab)
@@ -176,7 +176,7 @@ let rec evalExp (e : UntypedExp, vtab : VarTable, ftab : FunTable) : Value =
         match (res1, res2) with
           | (BoolVal n1, BoolVal n2) -> match (n1) with
                                           | true  -> BoolVal (true)
-                                          | false -> BoolVal (n1 || n2)                           
+                                          | false -> BoolVal (n2)                           
           | _ -> invalidOperands "|| called on non-bool value: " [(Bool, Bool)] res1 res2 pos
   | Not(e1, pos) ->
         let res1 = evalExp(e1, vtab, ftab)
