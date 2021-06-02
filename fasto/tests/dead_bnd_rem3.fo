@@ -1,0 +1,5 @@
+fun int main() = 
+    let p = 3 in
+    let x = 4 in
+    let y = write(2) in
+    2

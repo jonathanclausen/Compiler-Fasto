@@ -51,6 +51,13 @@ let rec buildFtab (fdecs : UntypedFunDec list) : FunTable =
           (* Report the first occurrence of the name. *)
           raise (MyError ("Already defined function: "+fid, getFunPos ofdecl))
 
+
+// helper function to extract a bool
+let extractBool (value: Value) : bool =
+    match value with
+      | BoolVal p -> p 
+      | _ -> failwith "not bool"
+
 (* Check whether a value matches a type. *)
 let rec typeMatch (tpval : Type * Value) : bool =
     match tpval with
@@ -164,20 +171,29 @@ let rec evalExp (e : UntypedExp, vtab : VarTable, ftab : FunTable) : Value =
           | _ -> invalidOperands "Divide on non-integral args: " [(Int, Int)] res1 res2 pos
   | And (e1, e2, pos) ->
         let res1 = evalExp(e1, vtab, ftab)
-        let res2 = evalExp(e2, vtab, ftab)
-        match (res1, res2) with
-          | (BoolVal n1, BoolVal n2) -> match (n1) with
-                                          | false -> BoolVal (false)
-                                          | true  -> BoolVal (n2)
-          | _ -> invalidOperands "&& called on non-bool value: " [(Bool, Bool)] res1 res2 pos
+        
+        match (res1) with
+          | BoolVal n1 -> match (n1) with
+                            | false -> BoolVal (false)
+                            | true  -> 
+                                      let res2 = evalExp(e2, vtab, ftab)
+                                      match (res2) with
+                                          | BoolVal n2 -> BoolVal (n2)
+                                          | _   -> invalidOperands "&& called on non-bool value: " [(Bool, Bool)] res1 res2 pos
+          | _ -> invalidOperand "&& called on non-bool value: " Bool res1  pos
   | Or (e1, e2, pos) ->
         let res1 = evalExp(e1, vtab, ftab)
-        let res2 = evalExp(e2, vtab, ftab)
-        match (res1, res2) with
-          | (BoolVal n1, BoolVal n2) -> match (n1) with
-                                          | true  -> BoolVal (true)
-                                          | false -> BoolVal (n2)                           
-          | _ -> invalidOperands "|| called on non-bool value: " [(Bool, Bool)] res1 res2 pos
+        
+       
+        match (res1) with
+          | BoolVal n1 -> match (n1) with
+                            | true  -> BoolVal (true)
+                            | false -> 
+                                      let res2 = evalExp(e2, vtab, ftab)
+                                      match (res2) with
+                                         | BoolVal n2 -> BoolVal (n2)
+                                         | _   -> invalidOperands "|| called on non-bool value: " [(Bool, Bool)] res1 res2 pos
+          | _ -> invalidOperand "|| called on non-bool value: " Bool res1 pos
   | Not(e1, pos) ->
         let res1 = evalExp(e1, vtab, ftab)
         match (res1) with
@@ -270,6 +286,7 @@ let rec evalExp (e : UntypedExp, vtab : VarTable, ftab : FunTable) : Value =
                List.fold (fun acc x -> evalFunArg (farg, vtab, ftab, pos, [acc;x])) nel lst
           | otherwise -> raise (MyError("Third argument of reduce is not an array: " + ppVal 0 arr
                                        , pos))
+                                       
   (* TODO project task 2: `replicate(n, a)`
      Look in `AbSyn.fs` for the arguments of the `Replicate`
      (`Map`,`Scan`) expression constructors.
@@ -284,30 +301,41 @@ let rec evalExp (e : UntypedExp, vtab : VarTable, ftab : FunTable) : Value =
         let a' = evalExp(a, vtab, ftab)
         match n' with
           | IntVal n' when n' >= 0 ->
-                        let arr = [ 0 .. n' ]
+                        let arr = [ 1 .. n' ]
                         let val_arr = List.map(fun x -> a' ) arr
                         ArrayVal (val_arr, valueType(a'))
           | IntVal _ -> raise (MyError("First argument of replicate is 0 or less: " + ppVal 0 n'
                                        , pos))
           | _ ->   invalidOperand "Replicate on non-integer n: " (Int) n' pos
 
-  (* TODO project task 2: `filter(p, arr)`
-       pattern match the implementation of map:
-       - check that the function `p` result type (use `rtpFunArg`) is bool;
-       - evaluate `arr` and check that the (value) result corresponds to an array;
-       - use F# `List.filter` to keep only the elements `a` of `arr` which succeed
-         under predicate `p`, i.e., `p(a) = true`;
-       - create an `ArrayVal` from the (list) result of the previous step.
-  *)
-  | Filter (_, _, _, _) ->
-        failwith "Unimplemented interpretation of filter"
-
+  | Filter (p, arr_exp, t, pos) ->
+        let arr  = evalExp(arr_exp, vtab, ftab)
+        let farg_ret_type = rtpFunArg p ftab pos
+        if farg_ret_type <> Bool then raise (MyError( "Predicate function does not return bool value"+ ppFunArg 0 p , pos))
+        match arr with
+          | ArrayVal (lst,tp1) ->
+               let mlst = List.filter (fun x -> (extractBool(evalFunArg (p, vtab, ftab, pos, [x])))) lst
+               ArrayVal (mlst, tp1)
+          | otherwise -> raise (MyError("Second argument of filter not an array " + ppVal 0 arr
+                                       , pos))
+        
   (* TODO project task 2: `scan(f, ne, arr)`
      Implementation similar to reduce, except that it produces an array
      of the same type and length to the input array `arr`.
   *)
-  | Scan (_, _, _, _, _) ->
-        failwith "Unimplemented interpretation of scan"
+  | Scan (farg, ne, arrexp, t, pos) ->
+        let farg_ret_type = rtpFunArg farg ftab pos
+        let nel  = evalExp(ne, vtab, ftab)
+        let arr  = evalExp(arrexp, vtab, ftab)
+        match arr with
+          | ArrayVal (lst,tp1) ->
+              if farg_ret_type <> tp1 || (not(typeMatch(tp1, nel))) then raise (MyError( "Predicate function's return type or accumulator does not match array-type"+ ppVal 0 arr, pos)) 
+              let mlst = List.scan (fun acc x -> evalFunArg (farg, vtab, ftab, pos, [x;acc])) nel lst
+              match mlst with
+                | head :: tail -> ArrayVal (tail, farg_ret_type)
+                | _ -> ArrayVal (mlst, farg_ret_type)
+          | otherwise -> raise (MyError("Third argument of scan is not an array: " + ppVal 0 arr
+                                       , pos))
 
   | Read (t,p) ->
         let str = Console.ReadLine()

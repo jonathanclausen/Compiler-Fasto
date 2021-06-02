@@ -1,0 +1,1 @@
+Interpreter error: Divide by zero error: ; expected int and int, got int (2) and int (0) instead at line 2, column 7

@@ -31,37 +31,38 @@ no_way:
 # Function main
 main:
 	sw	$31, -4($29)
-	addi	$29, $29, -8
-	ori	$4, $0, 1
-# was:	ori	_and_L_5_, $0, 1
-	ori	$3, $0, 0
+	sw	$16, -8($29)
+	addi	$29, $29, -12
+	ori	$3, $0, 1
+# was:	ori	_or_L_5_, $0, 1
+	ori	$16, $0, 0
 # was:	ori	_tmp_4_, $0, 0
-	beq	$4, $0, _false_7_
-# was:	beq	_and_L_5_, $0, _false_7_
+	bne	$3, $0, _true_7_
+# was:	bne	_or_L_5_, $0, _true_7_
 	jal	no_way
 # was:	jal	no_way, 
-# 	ori	_and_R_6_,$2,0
-	ori	$3, $0, 0
-# was:	ori	_tmp_4_, $0, 0
-	beq	$2, $0, _false_7_
-# was:	beq	_and_R_6_, $0, _false_7_
-	ori	$3, $0, 1
+# 	ori	_or_R_6_,$2,0
+	beq	$2, $0, _false_8_
+# was:	beq	_or_R_6_, $0, _false_8_
+_true_7_:
+	ori	$16, $0, 1
 # was:	ori	_tmp_4_, $0, 1
-_false_7_:
+_false_8_:
 # 	ori	_letBind_3_,_tmp_4_,0
 	la	$2, _true
 # was:	la	$2, _true
-	bne	$3, $0, _wBoolF_8_
-# was:	bne	_letBind_3_, $0, _wBoolF_8_
+	bne	$16, $0, _wBoolF_9_
+# was:	bne	_letBind_3_, $0, _wBoolF_9_
 	la	$2, _false
 # was:	la	$2, _false
-_wBoolF_8_:
+_wBoolF_9_:
 	jal	putstring
 # was:	jal	putstring, $2
 	ori	$2, $0, 1
 # was:	ori	_mainres_2_, $0, 1
 # 	ori	$2,_mainres_2_,0
-	addi	$29, $29, 8
+	addi	$29, $29, 12
+	lw	$16, -8($29)
 	lw	$31, -4($29)
 	jr	$31
 ord:

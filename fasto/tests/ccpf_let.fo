@@ -1,0 +1,9 @@
+fun int foo(int x) =  (x + x)
+
+fun int main() =  
+    let p = 2 in    
+    let x = 
+    (let y = foo(p) in y+y) in
+    x+x
+
+

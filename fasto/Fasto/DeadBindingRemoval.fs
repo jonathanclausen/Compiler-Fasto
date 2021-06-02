@@ -60,14 +60,13 @@ let rec removeDeadBindingsInExp (e : TypedExp) : (bool * DBRtab * TypedExp) =
              List.fold SymTab.combine (SymTab.empty()) uses,
              ArrayLit (es', t, pos) )
         (* ToDO: Task 3: implement the cases of `Var`, `Index` and `Let` expressions below *)
-        | Var (name, pos) ->
             (* Task 3, Hints for the `Var` case:
                   - 1st element of result tuple: can a variable name contain IO?
                   - 2nd element of result tuple: you have discovered a name, hence
                         you need to record it in a new symbol table.
                   - 3rd element of the tuple: should be the optimised expression.
-            *)
-            failwith "Unimplemented removeDeadBindingsInExp for Var"
+            *)   
+        | Var (name, pos) -> (false, (recordUse name (SymTab.empty())), Var(name, pos))
         | Plus (x, y, pos) ->
             let (xios, xuses, x') = removeDeadBindingsInExp x
             let (yios, yuses, y') = removeDeadBindingsInExp y
@@ -112,14 +111,23 @@ let rec removeDeadBindingsInExp (e : TypedExp) : (bool * DBRtab * TypedExp) =
              List.fold SymTab.combine (SymTab.empty()) uses,
              Apply (fname, args', pos))
         | Index (name, e, t, pos) ->
+            let (ios, uses, e') = removeDeadBindingsInExp e
+            (ios, (SymTab.combine (recordUse name (SymTab.empty()) ) uses), Index(name, e', t, pos))
             (* Task 3, `Index` case: is similar to the `Var` case, except that,
                         additionally, you also need to recursively optimize the index
                         expression `e` and to propagate its results (in addition
                         to recording the use of `name`).
             *)
-            failwith "Unimplemented removeDeadBindingsInExp for Index"
-
         | Let (Dec (name, e, decpos), body, pos) ->
+            let (b_ios, b_uses, body') = removeDeadBindingsInExp body
+            let (e_ios, e_uses, e') = removeDeadBindingsInExp e
+
+            if (not (isUsed name b_uses) && not e_ios ) then (b_ios, b_uses, body')
+            else
+                let ios = (b_ios || e_ios)
+                (ios, (SymTab.combine b_uses e_uses ), (Let (Dec (name, e', decpos), body', pos)))
+        
+        
             (* Task 3, Hints for the `Let` case:
                   - recursively process the `body` of the let-binding.
                   - if `name` was not found to have been used in `body`
@@ -137,7 +145,6 @@ let rec removeDeadBindingsInExp (e : TypedExp) : (bool * DBRtab * TypedExp) =
                       -- construct the the new `Let` expression from
                          the resulted optimized subexpressions.
             *)
-            failwith "Unimplemented removeDeadBindingsInExp for Let"
         | Iota (e, pos) ->
             let (io, uses, e') = removeDeadBindingsInExp e
             (io,

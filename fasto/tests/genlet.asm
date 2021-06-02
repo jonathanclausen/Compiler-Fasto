@@ -22,15 +22,9 @@ main:
 	sw	$31, -4($29)
 	sw	$16, -8($29)
 	addi	$29, $29, -12
-	ori	$2, $0, 2
-# was:	ori	_letBind_2_, $0, 2
-	ori	$3, $0, 4
-# was:	ori	_letBind_3_, $0, 4
-# 	ori	_plus_L_5_,_letBind_2_,0
-# 	ori	_plus_R_6_,_letBind_3_,0
-	add	$16, $2, $3
-# was:	add	_tmp_4_, _plus_L_5_, _plus_R_6_
-# 	ori	_mainres_1_,_tmp_4_,0
+	ori	$16, $0, 6
+# was:	ori	_tmp_2_, $0, 6
+# 	ori	_mainres_1_,_tmp_2_,0
 	ori	$2, $16, 0
 # was:	ori	$2, _mainres_1_, 0
 	jal	putint

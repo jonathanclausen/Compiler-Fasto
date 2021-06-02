@@ -24,35 +24,34 @@ main:
 	addi	$29, $29, -12
 	jal	getint
 # was:	jal	getint, $2
+# 	ori	_letBind_2_,$2,0
 	ori	$3, $2, 0
-# was:	ori	_letBind_2_, $2, 0
-	ori	$4, $0, 0
-# was:	ori	_minus_L_4_, $0, 0
-	ori	$2, $0, 3
-# was:	ori	_minus_R_5_, $0, 3
-	sub	$2, $4, $2
-# was:	sub	_letBind_3_, _minus_L_4_, _minus_R_5_
-# 	ori	_negate_9_,_letBind_2_,0
-	ori	$4, $0, -1
-# was:	ori	_-1_10_, $0, -1
-	mul	$3, $3, $4
-# was:	mul	_eq_L_7_, _negate_9_, _-1_10_
-# 	ori	_eq_R_8_,_letBind_3_,0
+# was:	ori	_negate_6_, _letBind_2_, 0
+	ori	$2, $0, -1
+# was:	ori	_-1_7_, $0, -1
+	mul	$2, $3, $2
+# was:	mul	_eq_L_4_, _negate_6_, _-1_7_
+	ori	$4, $0, 3
+# was:	ori	_negate_8_, $0, 3
+	ori	$3, $0, -1
+# was:	ori	_-1_9_, $0, -1
+	mul	$3, $4, $3
+# was:	mul	_eq_R_5_, _negate_8_, _-1_9_
 	ori	$16, $0, 0
-# was:	ori	_tmp_6_, $0, 0
-	bne	$3, $2, _false_11_
-# was:	bne	_eq_L_7_, _eq_R_8_, _false_11_
+# was:	ori	_tmp_3_, $0, 0
+	bne	$2, $3, _false_10_
+# was:	bne	_eq_L_4_, _eq_R_5_, _false_10_
 	ori	$16, $0, 1
-# was:	ori	_tmp_6_, $0, 1
-_false_11_:
-# 	ori	_mainres_1_,_tmp_6_,0
+# was:	ori	_tmp_3_, $0, 1
+_false_10_:
+# 	ori	_mainres_1_,_tmp_3_,0
 	la	$2, _true
 # was:	la	$2, _true
-	bne	$16, $0, _wBoolF_12_
-# was:	bne	_mainres_1_, $0, _wBoolF_12_
+	bne	$16, $0, _wBoolF_11_
+# was:	bne	_mainres_1_, $0, _wBoolF_11_
 	la	$2, _false
 # was:	la	$2, _false
-_wBoolF_12_:
+_wBoolF_11_:
 	jal	putstring
 # was:	jal	putstring, $2
 	ori	$2, $16, 0

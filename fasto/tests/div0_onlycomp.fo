@@ -1,0 +1,7 @@
+fun int div(int x, int y) =
+    x / y
+
+fun int main() =
+    let x = 2 in
+    let y = 0 in
+    write(div(x,y))

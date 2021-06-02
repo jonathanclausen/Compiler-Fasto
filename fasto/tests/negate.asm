@@ -1,12 +1,36 @@
 	.text	0x00400000
 	.globl	main
 	la	$28, _heap_
-	la	$4, _a__str__8_
-# was:	la	_a__str__8__addr, _a__str__8_
+	la	$4, _a__str__44_
+# was:	la	_a__str__44__addr, _a__str__44_
 	ori	$3, $0, 1
-# was:	ori	_a__str__8__init, $0, 1
+# was:	ori	_a__str__44__init, $0, 1
 	sw	$3, 0($4)
-# was:	sw	_a__str__8__init, 0(_a__str__8__addr)
+# was:	sw	_a__str__44__init, 0(_a__str__44__addr)
+	la	$4, _a__str__25_
+# was:	la	_a__str__25__addr, _a__str__25_
+	ori	$3, $0, 1
+# was:	ori	_a__str__25__init, $0, 1
+	sw	$3, 0($4)
+# was:	sw	_a__str__25__init, 0(_a__str__25__addr)
+	la	$4, _a__str__19_
+# was:	la	_a__str__19__addr, _a__str__19_
+	ori	$3, $0, 1
+# was:	ori	_a__str__19__init, $0, 1
+	sw	$3, 0($4)
+# was:	sw	_a__str__19__init, 0(_a__str__19__addr)
+	la	$4, _a__str__13_
+# was:	la	_a__str__13__addr, _a__str__13_
+	ori	$3, $0, 1
+# was:	ori	_a__str__13__init, $0, 1
+	sw	$3, 0($4)
+# was:	sw	_a__str__13__init, 0(_a__str__13__addr)
+	la	$4, _a__str__7_
+# was:	la	_a__str__7__addr, _a__str__7_
+	ori	$3, $0, 1
+# was:	ori	_a__str__7__init, $0, 1
+	sw	$3, 0($4)
+# was:	sw	_a__str__7__init, 0(_a__str__7__addr)
 	la	$4, _true
 # was:	la	_true_addr, _true
 	ori	$3, $0, 4
@@ -23,198 +47,144 @@
 _stop_:
 	ori	$2, $0, 10
 	syscall
-# Function write_nl
-write_nl:
-	sw	$31, -4($29)
-	sw	$16, -8($29)
-	addi	$29, $29, -12
-# 	ori	_param_b_1_,$2,0
-	ori	$16, $2, 0
-# was:	ori	_tmp_4_, _param_b_1_, 0
-# 	ori	_letBind_3_,_tmp_4_,0
-	la	$2, _true
-# was:	la	$2, _true
-	bne	$16, $0, _wBoolF_5_
-# was:	bne	_letBind_3_, $0, _wBoolF_5_
-	la	$2, _false
-# was:	la	$2, _false
-_wBoolF_5_:
-	jal	putstring
-# was:	jal	putstring, $2
-	la	$2, _a__str__8_
-# was:	la	_tmp_7_, _a__str__8_
-# _a__str__8_: string "\n"
-# 	ori	_letBind_6_,_tmp_7_,0
-# 	ori	$2,_tmp_7_,0
-	jal	putstring
-# was:	jal	putstring, $2
-	ori	$2, $16, 0
-# was:	ori	_write_nlres_2_, _letBind_3_, 0
-# 	ori	$2,_write_nlres_2_,0
-	addi	$29, $29, 12
-	lw	$16, -8($29)
-	lw	$31, -4($29)
-	jr	$31
 # Function main
 main:
 	sw	$31, -4($29)
-	sw	$18, -16($29)
-	sw	$17, -12($29)
 	sw	$16, -8($29)
-	addi	$29, $29, -20
-	ori	$3, $0, 3
-# was:	ori	_divide_L_14_, $0, 3
-	ori	$2, $0, 2
-# was:	ori	_divide_R_15_, $0, 2
-	div	$4, $3, $2
-# was:	div	_eq_L_12_, _divide_L_14_, _divide_R_15_
+	addi	$29, $29, -12
+	ori	$3, $0, 1
+# was:	ori	_tmp_3_, $0, 1
+# 	ori	_letBind_2_,_tmp_3_,0
+	la	$2, _true
+# was:	la	$2, _true
+	bne	$3, $0, _wBoolF_4_
+# was:	bne	_letBind_2_, $0, _wBoolF_4_
+	la	$2, _false
+# was:	la	$2, _false
+_wBoolF_4_:
+	jal	putstring
+# was:	jal	putstring, $2
+	la	$2, _a__str__7_
+# was:	la	_tmp_6_, _a__str__7_
+# _a__str__7_: string "\n"
+# 	ori	_letBind_5_,_tmp_6_,0
+# 	ori	$2,_tmp_6_,0
+	jal	putstring
+# was:	jal	putstring, $2
+	ori	$3, $0, 0
+# was:	ori	_tmp_9_, $0, 0
+# 	ori	_letBind_8_,_tmp_9_,0
+	la	$2, _true
+# was:	la	$2, _true
+	bne	$3, $0, _wBoolF_10_
+# was:	bne	_letBind_8_, $0, _wBoolF_10_
+	la	$2, _false
+# was:	la	$2, _false
+_wBoolF_10_:
+	jal	putstring
+# was:	jal	putstring, $2
+	la	$2, _a__str__13_
+# was:	la	_tmp_12_, _a__str__13_
+# _a__str__13_: string "\n"
+# 	ori	_letBind_11_,_tmp_12_,0
+# 	ori	$2,_tmp_12_,0
+	jal	putstring
+# was:	jal	putstring, $2
+	ori	$3, $0, 0
+# was:	ori	_tmp_15_, $0, 0
+# 	ori	_letBind_14_,_tmp_15_,0
+	la	$2, _true
+# was:	la	$2, _true
+	bne	$3, $0, _wBoolF_16_
+# was:	bne	_letBind_14_, $0, _wBoolF_16_
+	la	$2, _false
+# was:	la	$2, _false
+_wBoolF_16_:
+	jal	putstring
+# was:	jal	putstring, $2
+	la	$2, _a__str__19_
+# was:	la	_tmp_18_, _a__str__19_
+# _a__str__19_: string "\n"
+# 	ori	_letBind_17_,_tmp_18_,0
+# 	ori	$2,_tmp_18_,0
+	jal	putstring
+# was:	jal	putstring, $2
+	ori	$16, $0, 1
+# was:	ori	_tmp_21_, $0, 1
+# 	ori	_letBind_20_,_tmp_21_,0
+	la	$2, _true
+# was:	la	$2, _true
+	bne	$16, $0, _wBoolF_22_
+# was:	bne	_letBind_20_, $0, _wBoolF_22_
+	la	$2, _false
+# was:	la	$2, _false
+_wBoolF_22_:
+	jal	putstring
+# was:	jal	putstring, $2
+	la	$2, _a__str__25_
+# was:	la	_tmp_24_, _a__str__25_
+# _a__str__25_: string "\n"
+# 	ori	_letBind_23_,_tmp_24_,0
+# 	ori	$2,_tmp_24_,0
+	jal	putstring
+# was:	jal	putstring, $2
+# 	ori	_or_L_31_,_letBind_20_,0
+	ori	$3, $0, 0
+# was:	ori	_or_L_29_, $0, 0
+	bne	$16, $0, _true_33_
+# was:	bne	_or_L_31_, $0, _true_33_
+# 	ori	_or_R_32_,_letBind_20_,0
+	beq	$16, $0, _false_34_
+# was:	beq	_or_R_32_, $0, _false_34_
+_true_33_:
+	ori	$3, $0, 1
+# was:	ori	_or_L_29_, $0, 1
+_false_34_:
+	ori	$2, $0, 0
+# was:	ori	_or_L_27_, $0, 0
+	bne	$3, $0, _true_35_
+# was:	bne	_or_L_29_, $0, _true_35_
+# 	ori	_or_R_30_,_letBind_20_,0
+	beq	$16, $0, _false_36_
+# was:	beq	_or_R_30_, $0, _false_36_
+_true_35_:
 	ori	$2, $0, 1
-# was:	ori	_eq_R_13_, $0, 1
+# was:	ori	_or_L_27_, $0, 1
+_false_36_:
 	ori	$3, $0, 0
-# was:	ori	_arg_11_, $0, 0
-	bne	$4, $2, _false_16_
-# was:	bne	_eq_L_12_, _eq_R_13_, _false_16_
+# was:	ori	_letBind_26_, $0, 0
+	bne	$2, $0, _true_37_
+# was:	bne	_or_L_27_, $0, _true_37_
+# 	ori	_or_R_28_,_letBind_20_,0
+	beq	$16, $0, _false_38_
+# was:	beq	_or_R_28_, $0, _false_38_
+_true_37_:
 	ori	$3, $0, 1
-# was:	ori	_arg_11_, $0, 1
-_false_16_:
-	ori	$2, $3, 0
-# was:	ori	$2, _arg_11_, 0
-	jal	write_nl
-# was:	jal	write_nl, $2
-	ori	$17, $2, 0
-# was:	ori	_letBind_10_, $2, 0
-	ori	$3, $0, 3
-# was:	ori	_divide_L_23_, $0, 3
-	ori	$2, $0, 2
-# was:	ori	_divide_R_24_, $0, 2
-	div	$3, $3, $2
-# was:	div	_negate_21_, _divide_L_23_, _divide_R_24_
-	ori	$2, $0, -1
-# was:	ori	_-1_22_, $0, -1
-	mul	$2, $3, $2
-# was:	mul	_eq_L_19_, _negate_21_, _-1_22_
-	ori	$4, $0, 2
-# was:	ori	_negate_25_, $0, 2
-	ori	$3, $0, -1
-# was:	ori	_-1_26_, $0, -1
-	mul	$3, $4, $3
-# was:	mul	_eq_R_20_, _negate_25_, _-1_26_
-	ori	$4, $0, 0
-# was:	ori	_arg_18_, $0, 0
-	bne	$2, $3, _false_27_
-# was:	bne	_eq_L_19_, _eq_R_20_, _false_27_
-	ori	$4, $0, 1
-# was:	ori	_arg_18_, $0, 1
-_false_27_:
-	ori	$2, $4, 0
-# was:	ori	$2, _arg_18_, 0
-	jal	write_nl
-# was:	jal	write_nl, $2
-	ori	$16, $2, 0
-# was:	ori	_letBind_17_, $2, 0
-	ori	$3, $0, 3
-# was:	ori	_divide_L_32_, $0, 3
-	ori	$4, $0, 2
-# was:	ori	_negate_34_, $0, 2
-	ori	$2, $0, -1
-# was:	ori	_-1_35_, $0, -1
-	mul	$2, $4, $2
-# was:	mul	_divide_R_33_, _negate_34_, _-1_35_
-	div	$3, $3, $2
-# was:	div	_eq_L_30_, _divide_L_32_, _divide_R_33_
-	ori	$4, $0, 2
-# was:	ori	_negate_36_, $0, 2
-	ori	$2, $0, -1
-# was:	ori	_-1_37_, $0, -1
-	mul	$2, $4, $2
-# was:	mul	_eq_R_31_, _negate_36_, _-1_37_
-	ori	$4, $0, 0
-# was:	ori	_arg_29_, $0, 0
-	bne	$3, $2, _false_38_
-# was:	bne	_eq_L_30_, _eq_R_31_, _false_38_
-	ori	$4, $0, 1
-# was:	ori	_arg_29_, $0, 1
+# was:	ori	_letBind_26_, $0, 1
 _false_38_:
-	ori	$2, $4, 0
-# was:	ori	$2, _arg_29_, 0
-	jal	write_nl
-# was:	jal	write_nl, $2
-	ori	$18, $2, 0
-# was:	ori	_letBind_28_, $2, 0
-	ori	$2, $0, 3
-# was:	ori	_divide_L_45_, $0, 3
-	ori	$4, $0, 2
-# was:	ori	_negate_47_, $0, 2
-	ori	$3, $0, -1
-# was:	ori	_-1_48_, $0, -1
-	mul	$3, $4, $3
-# was:	mul	_divide_R_46_, _negate_47_, _-1_48_
-	div	$3, $2, $3
-# was:	div	_negate_43_, _divide_L_45_, _divide_R_46_
-	ori	$2, $0, -1
-# was:	ori	_-1_44_, $0, -1
-	mul	$2, $3, $2
-# was:	mul	_eq_L_41_, _negate_43_, _-1_44_
-	ori	$3, $0, 1
-# was:	ori	_eq_R_42_, $0, 1
-	ori	$4, $0, 0
-# was:	ori	_arg_40_, $0, 0
-	bne	$2, $3, _false_49_
-# was:	bne	_eq_L_41_, _eq_R_42_, _false_49_
-	ori	$4, $0, 1
-# was:	ori	_arg_40_, $0, 1
-_false_49_:
-	ori	$2, $4, 0
-# was:	ori	$2, _arg_40_, 0
-	jal	write_nl
-# was:	jal	write_nl, $2
-# 	ori	_letBind_39_,$2,0
-# 	ori	_and_L_55_,_letBind_10_,0
-	ori	$3, $0, 0
-# was:	ori	_and_L_53_, $0, 0
-	beq	$17, $0, _false_57_
-# was:	beq	_and_L_55_, $0, _false_57_
-# 	ori	_and_R_56_,_letBind_17_,0
-	ori	$3, $0, 0
-# was:	ori	_and_L_53_, $0, 0
-	beq	$16, $0, _false_57_
-# was:	beq	_and_R_56_, $0, _false_57_
-	ori	$3, $0, 1
-# was:	ori	_and_L_53_, $0, 1
-_false_57_:
-	ori	$4, $0, 0
-# was:	ori	_and_L_51_, $0, 0
-	beq	$3, $0, _false_58_
-# was:	beq	_and_L_53_, $0, _false_58_
-# 	ori	_and_R_54_,_letBind_28_,0
-	ori	$4, $0, 0
-# was:	ori	_and_L_51_, $0, 0
-	beq	$18, $0, _false_58_
-# was:	beq	_and_R_54_, $0, _false_58_
-	ori	$4, $0, 1
-# was:	ori	_and_L_51_, $0, 1
-_false_58_:
-	ori	$3, $0, 0
-# was:	ori	_arg_50_, $0, 0
-	beq	$4, $0, _false_59_
-# was:	beq	_and_L_51_, $0, _false_59_
-# 	ori	_and_R_52_,_letBind_39_,0
-	ori	$3, $0, 0
-# was:	ori	_arg_50_, $0, 0
-	beq	$2, $0, _false_59_
-# was:	beq	_and_R_52_, $0, _false_59_
-	ori	$3, $0, 1
-# was:	ori	_arg_50_, $0, 1
-_false_59_:
-	ori	$2, $3, 0
-# was:	ori	$2, _arg_50_, 0
-	jal	write_nl
-# was:	jal	write_nl, $2
-# 	ori	_mainres_9_,$2,0
-# 	ori	$2,_mainres_9_,0
-	addi	$29, $29, 20
-	lw	$18, -16($29)
-	lw	$17, -12($29)
+# 	ori	_tmp_40_,_letBind_26_,0
+	ori	$16, $3, 0
+# was:	ori	_letBind_39_, _tmp_40_, 0
+	la	$2, _true
+# was:	la	$2, _true
+	bne	$16, $0, _wBoolF_41_
+# was:	bne	_letBind_39_, $0, _wBoolF_41_
+	la	$2, _false
+# was:	la	$2, _false
+_wBoolF_41_:
+	jal	putstring
+# was:	jal	putstring, $2
+	la	$2, _a__str__44_
+# was:	la	_tmp_43_, _a__str__44_
+# _a__str__44_: string "\n"
+# 	ori	_letBind_42_,_tmp_43_,0
+# 	ori	$2,_tmp_43_,0
+	jal	putstring
+# was:	jal	putstring, $2
+	ori	$2, $16, 0
+# was:	ori	_mainres_1_, _letBind_39_, 0
+# 	ori	$2,_mainres_1_,0
+	addi	$29, $29, 12
 	lw	$16, -8($29)
 	lw	$31, -4($29)
 	jr	$31
@@ -330,7 +300,23 @@ _Msg_DivZero_:
 	.asciiz	"division by zero"
 # String Literals
 	.align	2
-_a__str__8_:
+_a__str__44_:
+	.space	4
+	.asciiz	"\n"
+	.align	2
+_a__str__25_:
+	.space	4
+	.asciiz	"\n"
+	.align	2
+_a__str__19_:
+	.space	4
+	.asciiz	"\n"
+	.align	2
+_a__str__13_:
+	.space	4
+	.asciiz	"\n"
+	.align	2
+_a__str__7_:
 	.space	4
 	.asciiz	"\n"
 	.align	2
